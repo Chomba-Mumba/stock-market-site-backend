@@ -1,27 +1,28 @@
 import react from 'react';
 import { Navbar } from '../../components/Navbar/Navbar';
-import { StockData } from './StockData';
-import { ModelConsensus } from './ModelConsensus';
-import { QuantitativeAnalysis } from './QuantitativeAnalysis';
-import { StockGraph } from './StockGraph';
-import { StockReportHeader } from './StockReportHeader';
+import { StockData } from './components/StockData';
+import { ModelConsensus } from './components/ModelConsensus';
+import { StockGraph } from './components/StockGraph';
+import { StockReportHeader } from './components/StockReportHeader';
+import { MarketPanel } from './components/MarketPanel';
 
 import './Home.module.css';
-
+// TODO - make website dark theme?
 export function Home() {
   return (
     <div className="Home">
       <header className="Home-header">
         <Navbar />
-        <div className="Home-header-content">
-          <h1>FTSE 100 Stock Market Prediction</h1>
-        </div>
       </header>
       <body>
         <div className='Home-Container'>
+            <div className='Market-Panel'>
+              <MarketPanel/>
+            </div>
             <div className='Stock-Report-Header'>
               <StockReportHeader/>
             </div>
+
             <div className='Stock-Data-Div'>
                 <StockData/>
             </div>
@@ -30,9 +31,6 @@ export function Home() {
             </div>
             <div className='Model-Consensus-Div'>
                 <ModelConsensus/>
-            </div>
-            <div className='Quantitative-Analysis-Div'>
-                <QuantitativeAnalysis/>
             </div>
         </div>
         

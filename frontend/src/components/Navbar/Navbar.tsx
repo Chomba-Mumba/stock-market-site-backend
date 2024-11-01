@@ -1,18 +1,31 @@
 import React from 'react';
-import './NavBar.css';
-
+import 'bootstrap/dist/css/bootstrap.css';
+import './NavBar.module.css';
+// TODO Disable navbar links depending on page
 export function Navbar() {
   return (
-    <nav className="custom-navbar ">
-      <div className="navbar-left">
-      </div>
-      <div className="navbar-right">
-        <ul className="navbar-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/previous-scripts">Model Analytics</a></li>
-          <li><a href="/">Related News</a></li>
-        </ul>
-      </div>
-    </nav>
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <a className="navbar-brand" href="#">Link To Github</a>
+    <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span className="navbar-toggler-icon"></span>
+    </button>
+  
+    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul className="navbar-nav mr-auto">
+        <li className="nav-item active">
+          <a className="nav-link" href="/">Home <span className="sr-only">(current)</span></a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#">Academic Report</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#">Related News</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#">Comparative Analysis</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
   );
 }
