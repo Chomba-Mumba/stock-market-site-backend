@@ -24,4 +24,4 @@ yarn-error.log*
 
 training_data.csv
 
-venv/
+backend/venv/
