@@ -24,4 +24,15 @@ yarn-error.log*
 
 training_data.csv
 
-backend/venv/
+/venv/
+
+# Local Terraform directories and files
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Sensitive variable files
+terraform.tfvars
+
+# Optional: Ignore lock file if version consistency isn’t required
+# .terraform.lock.hcl
