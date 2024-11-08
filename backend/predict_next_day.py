@@ -65,6 +65,7 @@ def predict_next_day(local_path, pred_path):
         raise
 
 
+
 # Load model form S3 bucket
 bucket_name = 'stock-market-site'
 s3 = boto3.client('s3')
