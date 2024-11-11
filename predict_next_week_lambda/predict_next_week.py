@@ -2,7 +2,6 @@ from io import StringIO
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-import os
 import datetime
 import logging
 
@@ -57,14 +56,14 @@ def scale_data(train_df):
 def unscale_data(scaler, data):
     return scaler.inverse_transform(data)
 
-train_df_multi, scaler = scale_data(train_df)
+
 
 def predict_next_week(local_path, pred_path):
     try:
         # Load the model
         model = load_model(local_path)
 
-
+        train_df_multi, scaler = scale_data(train_df)
         next_5_days_pred = predict_multiple_steps(train_df_multi, model, scaler=scaler, seq_length=25, steps=5)
         print("Predicted stock prices for the next 5 days:", next_5_days_pred)
 
