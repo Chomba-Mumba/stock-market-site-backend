@@ -5,6 +5,7 @@ on:
     workflows: ["Python Lambda Tests"] # Zip lambda functions and deploy to S3 after running unit tests.
     types:
       - completed
+    workflow_dispatch: # Allow manual triggering
 
 jobs:
   To-Zip:
