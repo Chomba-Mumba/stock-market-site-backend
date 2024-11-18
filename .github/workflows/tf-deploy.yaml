@@ -1,44 +1,46 @@
-# name: Deploy AWS Resources
+name: 'Deploy AWS Resources'
 
-# on:
-#   workflow_run:
-#     workflows: ["Python Lambda Tests"]  # The name of the test workflow
-#     types:
-#       - completedRun tests on pull requests to the main branch
+on:
+  workflow_run:
+    workflows: ["Python Lambda Tests"]  # The name of the test workflow
+    types:
+      - completedRun tests on pull requests to the main branch
+env
+  TF_CLOUD_ORGANIZATION: "personal_chomba"
+  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+  TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
+  CONFIG_DIRECTORY: "terraform"
 
-# jobs:
+jobs:
+  terraform:
+    if github.repository != 'personal_chomba/stock-market-site':
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-#   tf_code_check:
-#     name: Terraform Validation and Build
-#     runs-on: ubuntu-latest
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
+        id: apply-upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
 
-#     if:  ${{ inputs.tfpath }} 
-#     steps:
-#     - uses: actions/checkout@v2.5.0
+      - name: Create Apply Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.0
+        id: apply-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration-version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+          plan-only: true
 
-
-#     - name: Configure AWS Credentials Action For GitHub Actions
-#       uses: aws-actions/configure-aws-credentials@v1
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws-region: us-west-2 
-#     - name: Setup Terraform CLI
-#       uses: hashicorp/setup-terraform@v2.0.2
-
-#     - name: Terraform init, plan and apply
-#       run: |
-#         echo `pwd`
-#         echo "tfpath ${{ github.event.inputs.tfpath }}"
-#         echo "** Running Terraform Init**"
-#         terraform init
-
-#         echo "** Running Terraform Validate**"
-#         terraform validate
-
-#         echo "** Running Terraform Plan**"
-#         terraform plan
-
-# #        echo "** Running Terraform Apply**"
-# #        terraform apply -auto-approve
-#       working-directory: ${{ github.event.inputs.tfpath }}
+      - name: Apply
+        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
+        if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
+        id: apply
+        with:
+          run: ${{ steps.apply-run.outputs.run_id }}
+          comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"

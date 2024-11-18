@@ -1,5 +1,5 @@
 name: Python Lambda Tests
-
+#  TODO - Setup wokflow to zip lambda functions
 on:
   push:
     branches:

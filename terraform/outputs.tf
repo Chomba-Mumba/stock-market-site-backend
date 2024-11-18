@@ -8,3 +8,12 @@ output "lambda_bucket_name" {
 
   value = aws_s3_bucket.lambda_bucket.id
 }
+
+# API GATEWAY OUTPUTS
+output "api_gateway_url" {
+  value = aws_api_gateway_deployment.deploy.invoke_url
+}
+
+output "deployment_arn" {
+  value = aws_api_gateway_deployment.deploy.execution_arn
+}

@@ -1,0 +1,31 @@
+name: 'Zip and Upload Lambda Functions'
+
+on:
+  workflow_run:
+    workflows: ["Python Lambda Tests"] # Zip lambda functions and deploy to S3 after running unit tests.
+    types:
+      - completedRun tests on pull requests to the main branch
+
+jobs:
+  To-Zip:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Zip
+      run: sudo apt-get install zip
+
+    - name: Zip and Upload Lambda Functions
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+      run: |
+        for dir in *_lambda; do
+          if [ -d "$dir" ]; then
+            zip -r "${dir}.zip" "$dir"
+            aws s3 cp "${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
+          fi
+        done
+            
