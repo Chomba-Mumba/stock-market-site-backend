@@ -1,105 +1,65 @@
-resource "aws_api_gateway_rest_api" "rest_api" {
-  name = "${var.rest_api_name}"
+resource "aws_api_gateway_rest_api" "stock_market_site_rest_api" {
+  name        = var.rest_api_name
+  description = var.rest_api_description
+
   endpoint_configuration {
     types = ["EDGE"]
   }
 }
 
-# TRAIN MODEL
-resource "aws_api_gateway_resource" "train_model" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
-  path_part   = "train_model"
+# PREDICT NEXT DAY Resource
+resource "aws_api_gateway_resource" "predictions" {
+  rest_api_id = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  parent_id   = aws_api_gateway_rest_api.stock_market_site_rest_api.root_resource_id
+  path_part   = "predictions"
 }
 
-resource "aws_api_gateway_method" "http_method" {
+resource "aws_api_gateway_method" "predictions_method" {
   authorization = "NONE"
   http_method   = "GET"
-  resource_id   = aws_api_gateway_resource.train_model.id
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_resource.predictions.id
+  rest_api_id   = aws_api_gateway_rest_api.stock_market_site_rest_api.id
 }
 
-# FTSE PREDICTIONS
-resource "aws_api_gateway_resource" "ftse_predictions" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  parent_id   = aws_api_gateway_resource.pdf.id
-  path_part   = "ftse_predictions"
-}
-
-resource "aws_api_gateway_method" "http_method" {
-  authorization = "NONE"
-  http_method   = "GET"
-  resource_id   = aws_api_gateway_resource.ftse_predictions.id
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
-}
-
-#PREDICT NEXT DAY
-resource "aws_api_gateway_resource" "predict_next_day" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
-  path_part   = "predict_next_day"
-}
-
-resource "aws_api_gateway_method" "http_method" {
-  authorization = "NONE"
-  http_method   = "GET"
-  resource_id   = aws_api_gateway_resource.gateway_resource.id
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
-}
-
-#PREDICT NEXT WEEK
-resource "aws_api_gateway_resource" "predict_next_week" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  parent_id   = aws_api_gateway_resource.pdf.id
-  path_part   = "predict_next_week"
-}
-
-resource "aws_api_gateway_method" "http_method" {
-  authorization = "NONE"
-  http_method   = "GET"
-  resource_id   = aws_api_gateway_resource.gateway_resource.id
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
-}
-
-resource "aws_api_gateway_integration" "api_int" {
-  http_method = aws_api_gateway_method.http_method.http_method
-  resource_id = aws_api_gateway_resource.gateway_resource.id
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+resource "aws_api_gateway_integration" "predictions_integration" {
+  http_method             = aws_api_gateway_method.predictions_method.http_method
+  resource_id             = aws_api_gateway_resource.predictions.id
+  rest_api_id             = aws_api_gateway_rest_api.stock_market_site_rest_api.id
   integration_http_method = "POST"
-  type        = "AWS_PROXY"
-  uri         = "${var.lamda_arn}"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.predictions_lambda.invoke_arn
 }
 
-resource "aws_api_gateway_deployment" "deploy" {
-  depends_on = [aws_api_gateway_integration.api_int]
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+
+resource "aws_api_gateway_deployment" "stock_market_site_deploy" {
+  depends_on = [
+    aws_api_gateway_integration.predictions_method_integration,
+  ]
+
+  rest_api_id = aws_api_gateway_rest_api.stock_market_site_rest_api.id
   triggers = {
     redeployment = sha1(jsonencode([
-      aws_api_gateway_rest_api.rest_api.body,
-      aws_api_gateway_rest_api.rest_api.root_resource_id,
-      aws_api_gateway_method.http_method.id,
-      aws_api_gateway_integration.api_init.id,
+      aws_api_gateway_method.predictions_method.id,
     ]))
   }
+
   lifecycle {
     create_before_destroy = true
   }
 }
 
 resource "aws_api_gateway_stage" "stage" {
-  deployment_id = aws_api_gateway_deployment.deploy.id
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
-  stage_name    = "${var.stage_name}"
+  deployment_id = aws_api_gateway_deployment.stock_market_site_deploy.id
+  rest_api_id   = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  stage_name    = var.stage_name
 }
 
-resource "aws_api_gateway_method_settings" "pdfcreate" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  stage_name  = aws_api_gateway_stage.stage.stage_name
-  method_path = "create/POST"
+# Lambda Permissions
 
-  settings {
-    data_trace_enabled = true
-    metrics_enabled = true
-    logging_level   = "INFO"
-  }
+resource "aws_lambda_permission" "predictions_permission" {
+  statement_id  = "AllowAPIGatewayInvokePredictNextWeek"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.predictions_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.stock_market_site_rest_api.execution_arn}/*"
 }

@@ -17,6 +17,12 @@ variable "s3_bucket_arn" {
 variable "rest_api_name" {
   description = "The name of your API"
   type        = string
+  default     = "ftse-api"
+}
+
+variable "rest_api_description" {
+  description = "The name of your API"
+  type        = string
   default     = "mahira-api"
 }
 
