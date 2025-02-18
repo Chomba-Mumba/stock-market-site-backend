@@ -17,23 +17,16 @@ variable "s3_bucket_arn" {
 variable "rest_api_name" {
   description = "The name of your API"
   type        = string
-  default     = "ftse-api"
+  default     = "stock-market-prediction-api"
 }
 
 variable "rest_api_description" {
   description = "The name of your API"
   type        = string
-  default     = "mahira-api"
+  default     = "stock-market-prediction-api"
 }
 
 variable "stage_name" {
   description = "The name of your API stage"
   type        = string
-  default     = "mahira-stage"
-}
-
-variable "lamda_arn" {
-  type        = string
-  description = "lamda function arn"
-  default     = "YOUR LAMBDA ARN"
-}
+  default     = "stock-market-prediction-stage"
