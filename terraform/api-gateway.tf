@@ -79,10 +79,10 @@ resource "aws_api_gateway_method" "proxy_method" {
 }
 
 resource "aws_api_gateway_integration" "proxy_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.proxy.id
+  rest_api_id             = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  resource_id             = aws_api_gateway_resource.stock_market_site_proxy.id
   http_method             = aws_api_gateway_method.proxy_method.http_method
   type                    = "AWS_PROXY"
   integration_http_method = "POST"
-  uri                     = aws_lambda_function.lambda.invoke_arn
+  uri                     = aws_lambda_function.predictions_lambda.invoke_arn
 }

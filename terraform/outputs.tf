@@ -14,5 +14,5 @@ output "api_gateway_url" {
 }
 
 output "deployment_arn" {
-  value = aws_api_gateway_deployment.stock_market_site_deploy.execution_ar
+  value = aws_api_gateway_deployment.stock_market_site_deploy.execution_arn
 }
