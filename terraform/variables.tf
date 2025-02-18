@@ -30,3 +30,4 @@ variable "stage_name" {
   description = "The name of your API stage"
   type        = string
   default     = "stock-market-prediction-stage"
+}
