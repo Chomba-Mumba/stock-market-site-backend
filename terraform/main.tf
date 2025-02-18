@@ -30,12 +30,12 @@ resource "aws_s3_bucket" "terraform_state_bucket" {
 resource "aws_s3_bucket_versioning" "versioning" {
   bucket = aws_s3_bucket.terraform_state_bucket.id
   versioning_configuration {
-    enabled = true
+    status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
-  bucket = aws_s3_bucket.terraform_state.id
+  bucket = aws_s3_bucket.terraform_state_bucket.id
 
   rule {
     apply_server_side_encryption_by_default {
