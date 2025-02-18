@@ -3,8 +3,7 @@ name: 'Zip and Upload Lambda Functions'
 on:
   workflow_run:
     workflows: ["Python Lambda Tests"] # Zip lambda functions and deploy to S3 after running unit tests.
-    types:
-      - completed
+    types: [completed]
   pull_request:
     branches:
       - main 

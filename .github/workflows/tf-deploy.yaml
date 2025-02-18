@@ -4,6 +4,9 @@ on:
   workflow_run:
     workflows: ["Python Lambda Tests"]  # The name of the test workflow
     types: [completed]
+  pull_request:
+    branches:
+      - main
 env:
   TF_LOG: INFO
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
