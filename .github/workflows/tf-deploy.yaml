@@ -32,7 +32,7 @@ jobs:
       
       - name: Terraform init
         id: init
-        run: terraform init -backend-config=$BUCKET_TF_STATE
+        run: terraform init
 
       - name: Terraform format
         id: format
@@ -40,7 +40,7 @@ jobs:
 
       - name: Terraform validate
         id: validate
-        run: terrraform validate
+        run: terraform validate
 
       - name: Terraform plan
         id: plan
