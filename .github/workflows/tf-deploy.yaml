@@ -35,7 +35,7 @@ jobs:
         run: terrafrom init -backend-config=$BUCKET_TF_STATE
 
       - name: Terraform format
-        id: init
+        id: format
         run: terraform fmt -check
 
       - name: Terraform validate
