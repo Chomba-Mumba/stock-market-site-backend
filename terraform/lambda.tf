@@ -7,8 +7,8 @@ resource "aws_lambda_function" "predictions_lambda" {
 
   runtime = "python3.11"
 
-  s3_bucket     = "stock-market-site"
-  s3_key        = "lambda/predictions_lambda.zip"
+  s3_bucket  = "stock-market-site"
+  s3_key     = "lambda/predictions_lambda.zip"
   depends_on = [aws_iam_role.stock_market_lambda_role, aws_iam_policy.stock_market_iam_policy_for_lambda]
 }
 resource "aws_cloudwatch_log_group" "predictions" {
