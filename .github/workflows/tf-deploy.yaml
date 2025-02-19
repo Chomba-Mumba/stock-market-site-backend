@@ -52,4 +52,5 @@ jobs:
         run: exit 1
       
       - name: Terrafrom Apply
-        run: terraform apply
+        if: steps.plan.outcome == 'success'
+        run: terraform apply -auto-approve tfplan
