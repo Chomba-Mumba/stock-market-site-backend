@@ -205,9 +205,29 @@ def predict_next_day_lambda(event,context):
         'statusCode': 200,
         'body': 'Prediction completed and stored in S3.'
     }   
+def lambda_handler(event,context):
+
+    try:
+        method = event.get('httpMethod')
+        path = event.get('path')
+
+        if (method, path) in routes:
+            return routes[(method,path)](event,context)
+        else:
+            return {
+                'statusCode': 404,
+                'body': 'Endpoint not found'
+            }
+    except Exception as e:
+        return {
+            'satusCode': 500,
+            'body':'Internal server erorr: ' + e
+        }
 
 if __name__ == "__main__":
     event = {
+        'httpMethod': 'GET',
+        'path': 'predict_next_week_lambda',
         'bucket_name': 'stock-market-site',
         'multi_local_path': '/tmp/multi_step_lstm_model.h5',
         'pred_path': '/tmp/predictions.csv',
@@ -216,9 +236,11 @@ if __name__ == "__main__":
     }
     context = {}
 
-    print(predict_next_week_lambda(event, context))
+    print(lambda_handler(event, context))
 
     event = {
+        'httpMethod': 'GET',
+        'path': 'predict_next_day_lambda',
         'bucket_name': 'stock-market-site',
         'local_path': '/tmp/lstm_model_38_0.03.h5',
         'pred_path': '/tmp/predictions.csv',
@@ -226,4 +248,4 @@ if __name__ == "__main__":
         'pred_key': 'predictions/predictions.csv'
     }
 
-    print(predict_next_day_lambda(event, context))
+    print(lambda_handler(event, context))
