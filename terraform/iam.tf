@@ -24,7 +24,7 @@ resource "aws_iam_policy" "stock_market_iam_policy_for_lambda" {
   name        = "aws_iam_policy_for_terraform_lambda"
   path        = "/"
   description = "AWS IAM Policy for managing aws lambda role"
-  policy      =  policy = <<EOF
+  policy      = <<EOF
 {
  "Version": "2012-10-17",
  "Statement": [
