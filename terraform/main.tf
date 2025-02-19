@@ -13,7 +13,7 @@ terraform {
     key            = "terraform.tfstate"
     profile        = "assumed-role"
     region         = "eu-west-2"
-    dynamodb_table = "terraform_stock_market_prediction_tflock"
+    dynamodb_table = "stock_market_prediction_tflock"
     encrypt        = true
   }
 }
@@ -41,16 +41,5 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
     }
-  }
-}
-
-resource "aws_dynamodb_table" "terraform_lock" {
-  name         = "stock_market_prediction_tflock"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
   }
 }
