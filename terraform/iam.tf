@@ -34,6 +34,18 @@ resource "aws_iam_policy" "stock_market_iam_policy_for_lambda" {
      "Resource": "arn:aws:logs:*:*:*",
      "Effect": "Allow"
    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": "arn:aws:s3:::stock-market-site",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": ["lambda/*"]
+        }
+      }
+    },
    {
             "Effect": "Allow",
             "Action": [
@@ -41,7 +53,26 @@ resource "aws_iam_policy" "stock_market_iam_policy_for_lambda" {
               "s3:PutObject"
             ],
             "Resource": "arn:aws:s3:::stock-market-site/*"
-   }
+   },
+   {
+      "Effect": "Allow",
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Resource": "${aws_iam_role.stock_market_lambda_role.arn}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:GetFunction",
+        "lambda:DeleteFunction",
+        "lambda:InvokeFunction"
+      ],
+      "Resource": "arn:aws:lambda:*:*:function:predictions_lambda"
+    }
  ]
 }
 EOF
