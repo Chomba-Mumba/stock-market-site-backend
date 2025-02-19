@@ -40,7 +40,7 @@ resource "aws_iam_policy" "stock_market_iam_policy_for_lambda" {
               "s3:GetObject",
               "s3:PutObject"
             ],
-            "Resource": "arn:aws:s3:::stock-market-site"
+            "Resource": "arn:aws:s3:::stock-market-site/*"
    }
  ]
 }
