@@ -2,7 +2,7 @@ name: 'Deploy AWS Resources'
 
 on:
   workflow_run:
-    workflows: ["Python Lambda Tests"]  # The name of the test workflow
+    workflows: ["Zip and Upload Lambda Functions"]  # The name of the test workflow
     types: [completed]
   pull_request:
     branches:
