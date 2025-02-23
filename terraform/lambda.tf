@@ -10,7 +10,7 @@ resource "aws_lambda_function" "predictions_lambda" {
   s3_key     = "lambda/predictions_lambda.zip"
   depends_on = [aws_iam_role.stock_market_lambda_role]
 
-  source_code_hash = filesha256("lambda/predictions_lambda.zip")
+  source_code_hash = filesha256("predictions_lambda.zip")
 }
 
 resource "aws_cloudwatch_log_group" "predictions" {
