@@ -42,10 +42,10 @@ jobs:
         working-directory: ./terraform
 
     steps:
-      - name: Move Artifacts
+      - name: Move Lambda
         id: Move
         run: |
-          if [ -d "/lambda" ];
+          if [ -d "lambda" ];
             mv lambda ./terraform/
           fi
       - name: Checkout the repositoryy to the runner
