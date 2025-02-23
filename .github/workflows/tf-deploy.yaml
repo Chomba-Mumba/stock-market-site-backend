@@ -24,18 +24,13 @@ jobs:
 
     - name: Zip Lambda Functions
       run: |
+        mkdir -p lambda
         for dir in *_lambda; do
           if [ -d "$dir" ]; then
             zip -r "lambda/${dir}.zip" "$dir"
+            aws s3 cp "${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
           fi
         done
-
-    - name: Upload Artifacts (Store ZIP Locally)
-      uses: actions/upload-artifact@v4
-      with:
-        name: lambda-zips
-        path: lambda/*.zip
-
 
   terraform:
     needs: To-Zip
