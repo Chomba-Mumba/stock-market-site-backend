@@ -26,7 +26,7 @@ jobs:
       run: |
         for dir in *_lambda; do
           if [ -d "$dir" ]; then
-            zip -r "artifacts/lambda/${dir}.zip" "$dir"
+            zip -r "lambda/${dir}.zip" "$dir"
           fi
         done
 
@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: lambda-zips
-        path: artifacts/lambda/*.zip
+        path: lambda/*.zip
 
 
   terraform:
@@ -50,8 +50,8 @@ jobs:
       - name: Move Artifacts
         id: Move
         run: |
-          if [ -d "/artifacts/lambda" ];
-            mv artifacts/lambda ./terraform/
+          if [ -d "/lambda" ];
+            mv lambda ./terraform/
           fi
       - name: Checkout the repositoryy to the runner
         uses: actions/checkout@v4
