@@ -12,8 +12,31 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }}
-jobs:
+jobs:  
+  To-Zip:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Zip
+      run: sudo apt-get install zip
+
+    - name: Zip and Upload Lambda Functions
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+      run: |
+        for dir in *_lambda; do
+          if [ -d "$dir" ]; then
+            zip -r "${dir}.zip" "$dir"
+            aws s3 cp "${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
+          fi
+        done
+
   terraform:
+    needs: To-Zip
     name: "Terraform infrastructure change management"
     runs-on: ubuntu-latest
     defaults:
