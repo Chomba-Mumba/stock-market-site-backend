@@ -28,7 +28,7 @@ jobs:
         for dir in *_lambda; do
           if [ -d "$dir" ]; then
             zip -r "lambda/${dir}.zip" "$dir"
-            aws s3 cp "${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
+            aws s3 cp "lambda/${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
           fi
         done
 
