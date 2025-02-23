@@ -42,12 +42,6 @@ jobs:
         working-directory: ./terraform
 
     steps:
-      - name: Move Lambda
-        id: Move
-        run: |
-          if [ -d "lambda" ];
-            mv lambda ./terraform/
-          fi
       - name: Checkout the repositoryy to the runner
         uses: actions/checkout@v4
 
@@ -55,6 +49,13 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
          terraform_version: 1.3.0
+         
+      - name: Move Lambda
+        id: Move
+        run: |
+          if [ -d "lambda" ];
+            mv lambda ./terraform/
+          fi
       
       - name: Terraform init
         id: init
