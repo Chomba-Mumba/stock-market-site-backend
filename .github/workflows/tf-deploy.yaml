@@ -59,7 +59,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: lambda-zips
-          path: lambda/*.zip
+          path: terraform/lambda/
       
       - name: Terraform init
         id: init
