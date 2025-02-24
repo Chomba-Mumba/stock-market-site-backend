@@ -31,6 +31,11 @@ jobs:
             aws s3 cp "lambda/${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
           fi
         done
+    - name: Upload Lambda Artifacts
+      uses: actions/upload-artifact@v4
+      with: 
+        name: lambda-zips
+        path: lambda/*.zip
 
   terraform:
     needs: To-Zip
@@ -49,13 +54,12 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
          terraform_version: 1.3.0
-         
-      - name: Move Lambda
-        id: Move
-        run: |
-          if [ -d "lambda" ];
-            mv lambda ./terraform/
-          fi
+
+      - name: Download Lambda
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-zips
+          path: lambda/*.zip
       
       - name: Terraform init
         id: init
