@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-sudo apt install python3.11
 
 for dir in *_lambda; do
     if [ -d "$dir" ]; then
