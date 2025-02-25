@@ -21,14 +21,15 @@ jobs:
 
     - name: Install Zip
       run: sudo apt-get install zip
+    
+    - name: Create Dependency Package
+      run: bash ${GITHUB_wORKSPACE}/scripts/create_pkg.sh
 
-    - name: Zip Lambda Functions
+    - name: Upload Lambda Functions to S3
       run: |
-        mkdir -p lambda
-        for dir in *_lambda; do
+        for dir in /lambda; do
           if [ -d "$dir" ]; then
-            zip -r "lambda/${dir}.zip" "$dir"
-            aws s3 cp "lambda/${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
+            aws s3 cp "${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
           fi
         done
     - name: Upload Lambda Artifacts

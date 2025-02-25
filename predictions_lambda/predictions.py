@@ -205,6 +205,7 @@ def predict_next_day_lambda(event,context):
         'statusCode': 200,
         'body': 'Prediction completed and stored in S3.'
     }   
+
 def lambda_handler(event,context):
 
     try:
