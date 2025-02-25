@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+mkdir -p lambda
+
 for dir in *_lambda; do
     if [ -d "$dir" ]; then
         LAMBDA_NAME="$dir"
