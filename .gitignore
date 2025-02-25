@@ -25,7 +25,7 @@ yarn-error.log*
 training_data.csv
 
 /venv/
-
+venv/
 # Local Terraform directories and files
 .terraform/
 *.tfstate
