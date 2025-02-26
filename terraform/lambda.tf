@@ -18,8 +18,8 @@ resource "aws_lambda_function" "predictions_lambda" {
 resource "aws_lambda_layer_version" "predictions_layer" {
   layer_name = "stock_market_predictions_layer"
 
-  s3_bucket  = "stock-market-site"
-  s3_key     = "lambda/layers/predictions_layer.zip"
+  s3_bucket = "stock-market-site"
+  s3_key    = "lambda/layers/predictions_layer.zip"
 
   compatible_runtimes = ["python3.9"]
 }
