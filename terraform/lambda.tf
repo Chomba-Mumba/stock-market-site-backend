@@ -8,9 +8,9 @@ resource "aws_lambda_function" "predictions_lambda" {
 
   s3_bucket  = "stock-market-site"
   s3_key     = "lambda/predictions_lambda.zip"
-  depends_on = [aws_iam_role.stock_market_lambda_role]
+  depends_on = [aws_iam_role.stock_market_lambda_role, aws_lambda_layer_version.predictions_layer]
 
-  layers = [aws_lambda_layer_version.predictions_layer.arn, aws_lambda_layer_version.predictions_layer]
+  layers = [aws_lambda_layer_version.predictions_layer.arn]
 
   source_code_hash = filesha256("lambda/predictions_lambda.zip")
 }
