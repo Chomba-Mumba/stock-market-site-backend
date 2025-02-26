@@ -48,6 +48,12 @@ jobs:
         for zip_layer in lambda/layers/*.zip; do
             aws s3 cp "$zip_layer" "s3://stock-market-site/lambda/layers/$(basename "$zip_layer")"
         done
+        
+    - name: Upload Lambda Artifacts
+      uses: actions/upload-artifact@v4
+      with: 
+        name: lambda-zips
+        path: lambda/*.zip
 
   terraform:
     needs: To-Zip
@@ -61,6 +67,12 @@ jobs:
     steps:
       - name: Checkout the repositoryy to the runner
         uses: actions/checkout@v4
+
+      - name: Download Lambda Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-zips
+          path: terraform/lambda/
 
       - name: Setup Terraform with specified version on the runner
         uses: hashicorp/setup-terraform@v2

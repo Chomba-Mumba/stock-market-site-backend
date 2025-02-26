@@ -11,7 +11,7 @@ from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from functools import wraps
 
-from services.model_utils import load_past_data
+from utils.load_data import load_past_data
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -194,7 +194,7 @@ def predict_next_day_lambda(event,context):
     s3.download_file(bucket_name, model_key, local_path)
     s3.download_file(bucket_name, pred_key, pred_path)
 
-    model = load_model()
+    model = load_model(local_path)
 
     pred_df = predict_next_day(pred_path,train_df,model)
     csv_buffer = StringIO()
@@ -211,8 +211,10 @@ def lambda_handler(event,context):
     try:
         method = event.get('httpMethod')
         path = event.get('path')
+        print(routes)
+        print(f"{(method,path)}")
 
-        if (method, path) in routes:
+        if (method,path) in routes:
             return routes[(method,path)](event,context)
         else:
             return {
@@ -228,7 +230,7 @@ def lambda_handler(event,context):
 if __name__ == "__main__":
     event = {
         'httpMethod': 'GET',
-        'path': 'predict_next_week_lambda',
+        'path': '/predict_next_week',
         'bucket_name': 'stock-market-site',
         'multi_local_path': '/tmp/multi_step_lstm_model.h5',
         'pred_path': '/tmp/predictions.csv',
@@ -241,7 +243,7 @@ if __name__ == "__main__":
 
     event = {
         'httpMethod': 'GET',
-        'path': 'predict_next_day_lambda',
+        'path': '/predict_next_day',
         'bucket_name': 'stock-market-site',
         'local_path': '/tmp/lstm_model_38_0.03.h5',
         'pred_path': '/tmp/predictions.csv',
