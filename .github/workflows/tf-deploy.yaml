@@ -35,8 +35,10 @@ jobs:
 
     - name: Upload Lambda Functions to S3
       run: |
-        for dir in lambda/*.zip; do
-          aws s3 cp "${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip" --exact-timestamps
+        ls -lh lambda/
+        for zip_file in lambda/*.zip; do
+          echo "$zip_file"
+          aws s3 cp "$zip_file" "s3://stock-market-site/$(basename "$zip_file")"
         done
     - name: Upload Lambda Artifacts
       uses: actions/upload-artifact@v4
