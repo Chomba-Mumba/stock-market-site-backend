@@ -35,7 +35,7 @@ jobs:
 
     - name: Upload Lambda Functions to S3
       run: |
-        for dir in /lambda; do
+        for dir in lambda/*; do
           if [ -d "$dir" ]; then
             aws s3 cp "${dir}.zip" "s3://stock-market-site/lambda/${dir}.zip"
           fi
