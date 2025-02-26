@@ -27,7 +27,6 @@ done
 #upload lambda layers.
 echo "uploading lambda layers..."
 
-for zip_layer in lambda/layers*.zip do
-    echo "$zip_layer"
+for zip_layer in lambda/layers/*.zip do
     aws s3 cp "$zip_layer" "s3://stock-market-site/lambda/layers/$(basename "$zip_layer")"
 done
