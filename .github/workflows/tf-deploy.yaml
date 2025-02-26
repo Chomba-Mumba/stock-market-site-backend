@@ -36,11 +36,17 @@ jobs:
     - name: Upload Lambda Functions to S3
       run: |
         ls -lh lambda/
-        
+
         echo "uploading lambda functions..."
         for zip_file in lambda/*.zip; do
           echo "$zip_file"
           aws s3 cp "$zip_file" "s3://stock-market-site/lambda/$(basename "$zip_file")"
+        done
+        #upload lambda layers.
+
+        echo "uploading lambda layers..."
+        for zip_layer in lambda/layers/*.zip do
+            aws s3 cp "$zip_layer" "s3://stock-market-site/lambda/layers/$(basename "$zip_layer")"
         done
 
   terraform:
