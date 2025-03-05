@@ -6,22 +6,10 @@ resource "aws_lambda_function" "predictions_lambda" {
 
   runtime = "python3.9"
 
-  s3_bucket  = "stock-market-site"
-  s3_key     = "lambda/predictions_lambda.zip"
-  depends_on = [aws_iam_role.stock_market_lambda_role, aws_lambda_layer_version.predictions_layer]
+  depends_on = [aws_iam_role.stock_market_lambda_role]
 
-  layers = [aws_lambda_layer_version.predictions_layer.arn]
-
-  source_code_hash = filesha256("lambda/predictions_lambda.zip")
-}
-
-resource "aws_lambda_layer_version" "predictions_layer" {
-  layer_name = "stock_market_predictions_layer"
-
-  s3_bucket = "stock-market-site"
-  s3_key    = "lambda/layers/predictions_layer.zip"
-
-  compatible_runtimes = ["python3.9"]
+  image_uri    = var.image_uri
+  package_type = "Image"
 }
 
 resource "aws_cloudwatch_log_group" "predictions" {

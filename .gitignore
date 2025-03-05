@@ -34,5 +34,7 @@ venv/
 # Sensitive variable files
 terraform.tfvars
 
+/test/
+
 # Optional: Ignore lock file if version consistency isn’t required
 # .terraform.lock.hcl

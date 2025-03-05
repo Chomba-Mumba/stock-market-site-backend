@@ -1,26 +1,22 @@
 #!/bin/bash
 set -e
 
-LAYER_PATH="lambda/layers/predictions_layer"
+export ECR_REPOSITORY=${ECR_REPOSITORY}
 
-mkdir -p "${LAYER_PATH}/python"
+cd "predictions_lambda/"
 
-#create layers zip
-pip install -r requirements.txt -t "${LAYER_PATH}/python"
+echo "building  docker image..."
 
-zip -r "${LAYER_PATH}.zip" "${LAYER_PATH}"
+#build image
+docker build -t predictions .
 
-echo "Zipped Lambda Layer ${LAYER_PATH}"
+#tag image
+docker tag "predictions" "${ECR_REPOSITORY}/predictions:latest"
 
-#zip lambda functions
-for dir in *_lambda; do
-    if [ -d "$dir" ]; then
-        LAMBDA_NAME="$dir"
-        ZIP_FILE="lambda/${LAMBDA_NAME}.zip"
-        #create zip
-        zip -r "${ZIP_FILE}" "$dir"
+echo "pushing docker image to ecr: predictions"
 
-        echo "created lambda package: ${ZIP_FILE}"
-    fi
-done
+# Push the image to ECR
+docker push ${ECR_REPOSITORY}/predictions:latest
+
+echo "finished pushing docker image"
 

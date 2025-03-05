@@ -2,9 +2,12 @@ name: 'Deploy AWS Resources'
 
 on:
   workflow_run:
-    workflows: ["Zip and Upload Lambda Functions"]  # The name of the test workflow
+    workflows: ["Python Lambda Tests"]  # The name of the test workflow
     types: [completed]
   pull_request:
+    branches:
+      - main
+  push:
     branches:
       - main
 env:
@@ -12,8 +15,11 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  TF_VAR_image_uri: ${{ secrets.PREDICTIONS_LAMBDA_IMAGE_URI }}
+
 jobs:  
-  To-Zip:
+  Docker-Build-Push:   
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -24,39 +30,23 @@ jobs:
       with:
         python-version: "3.11.9"
 
-    - name: Install Zip
-      run: sudo apt-get install 
-    
-    - name: Directory details
-      run: ls -a
-    
-    - name: Create Dependency Package
-      run: bash scripts/create_pkg.sh
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Upload Lambda Functions to S3
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
+    
+    - name: Build and Push Docker Images
       run: |
-        ls -lh lambda/
-
-        echo "uploading lambda functions..."
-        for zip_file in lambda/*.zip; do
-          echo "$zip_file"
-          aws s3 cp "$zip_file" "s3://stock-market-site/lambda/$(basename "$zip_file")"
-        done
-        #upload lambda layers.
-
-        echo "uploading lambda layers..."
-        for zip_layer in lambda/layers/*.zip; do
-            aws s3 cp "$zip_layer" "s3://stock-market-site/lambda/layers/$(basename "$zip_layer")"
-        done
-        
-    - name: Upload Lambda Artifacts
-      uses: actions/upload-artifact@v4
-      with: 
-        name: lambda-zips
-        path: lambda/*.zip
+        export ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}
+        bash scripts/create_pkg.sh
 
   terraform:
-    needs: To-Zip
+    needs: Docker-Build-Push
     name: "Terraform infrastructure change management"
     runs-on: ubuntu-latest
     defaults:
@@ -65,14 +55,8 @@ jobs:
         working-directory: ./terraform
 
     steps:
-      - name: Checkout the repositoryy to the runner
+      - name: Checkout Repository to Runner
         uses: actions/checkout@v4
-
-      - name: Download Lambda Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: lambda-zips
-          path: terraform/lambda/
 
       - name: Setup Terraform with specified version on the runner
         uses: hashicorp/setup-terraform@v2

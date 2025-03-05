@@ -25,3 +25,9 @@ variable "stage_name" {
   type        = string
   default     = "stock_market_prediction_stage"
 }
+
+# lambda_predictions image uri
+variable "image_uri" {
+  type      = string
+  sensitive = true
+}
