@@ -78,6 +78,8 @@ jobs:
         working-directory: ./terraform
 
     steps:
+      - name: Debug Image URI
+        run: echo "TF_VAR_image_uri is $TF_VAR_image_uri"
       - name: Checkout Repository to Runner
         uses: actions/checkout@v4
 
