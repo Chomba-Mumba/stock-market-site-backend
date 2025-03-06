@@ -16,13 +16,12 @@ env:
   # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  TF_VAR_image_uri: ${{ secrets.PREDICTIONS_LAMBDA_IMAGE_URI }}
 permissions:
       id-token: write   # This is required for requesting the JWT
       contents: read 
 
 jobs:  
-  Docker-Build-Push:   
+  docker-build-push:   
     runs-on: ubuntu-latest
     outputs:
       image_uri: ${{ steps.push-image.outputs.image_uri }}
@@ -54,6 +53,7 @@ jobs:
         aws-region: eu-west-2
 
     - name: Build, tag, and push docker image to Amazon ECR
+      id: push-image
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: stock_market_prediction/lambda_functions
@@ -64,14 +64,13 @@ jobs:
         docker build -t $IMAGE_URI .
         docker push $IMAGE_URI
         echo "::add-mask::$IMAGE_URI"
-        echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
         echo "image_uri=$IMAGE_URI" >> $GITHUB_OUTPUT
 
   terraform:
-    needs: Docker-Build-Push
+    needs: docker-build-push
     name: "Terraform infrastructure change management"
     env:
-      TF_VAR_image_uri: ${{ needs.Docker-Build-Push.outputs.image_uri}}
+      TF_VAR_image_uri: ${{ needs.docker-build-push.outputs.image_uri}}
     runs-on: ubuntu-latest
     defaults:
       run:
