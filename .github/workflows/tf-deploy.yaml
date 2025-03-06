@@ -30,6 +30,12 @@ jobs:
       with:
         python-version: "3.11.9"
 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+      with:
+        role-to-assume: arn:aws:iam::429116711298:role/stock_market_backend_cicd_role
+        aws-region: eu-west-2
+
     - name: Docker Login
       uses: docker/login-action@v3
       with:
@@ -38,8 +44,10 @@ jobs:
 
     - name: Login to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
-    
+      uses: aws-actions/amazon-ecr-login@v2
+      with: 
+        aws-region: eu-west-2
+
     - name: Build and Push Docker Images
       run: |
         export ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}
