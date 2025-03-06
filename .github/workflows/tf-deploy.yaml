@@ -78,8 +78,7 @@ jobs:
         working-directory: ./terraform
 
     steps:
-      - name: Debug Image URI
-        run: echo "TF_VAR_image_uri is $TF_VAR_image_uri"
+
       - name: Checkout Repository to Runner
         uses: actions/checkout@v4
 
@@ -93,6 +92,9 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
          terraform_version: 1.3.0
+         
+      - name: Debug Image URI
+        run: echo "TF_VAR_image_uri is $TF_VAR_image_uri"
       
       - name: Terraform init
         id: init
