@@ -5,7 +5,8 @@ export ECR_REPOSITORY=${ECR_REPOSITORY}
 
 cd "predictions_lambda/"
 
-echo "building  docker image..."
+echo "building  docker image... in $(pwd)"
+ls -a
 
 #build image
 docker build -t predictions .
