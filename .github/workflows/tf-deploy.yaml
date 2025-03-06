@@ -17,6 +17,9 @@ env:
   BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   TF_VAR_image_uri: ${{ secrets.PREDICTIONS_LAMBDA_IMAGE_URI }}
+permissions:
+      id-token: write   # This is required for requesting the JWT
+      contents: read 
 
 jobs:  
   Docker-Build-Push:   
