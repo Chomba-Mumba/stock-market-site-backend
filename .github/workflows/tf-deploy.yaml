@@ -51,10 +51,15 @@ jobs:
       with: 
         aws-region: eu-west-2
 
-    - name: Build and Push Docker Images
+    - name: Build, tag, and push docker image to Amazon ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: stock_market_prediction/lambda_functions
+        IMAGE_TAG: ${{ github.sha }}
       run: |
-        export ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}
-        bash scripts/create_pkg.sh
+        cd "predictions_lambda/"
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
   terraform:
     needs: Docker-Build-Push
