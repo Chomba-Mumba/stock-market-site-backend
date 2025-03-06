@@ -24,6 +24,8 @@ permissions:
 jobs:  
   Docker-Build-Push:   
     runs-on: ubuntu-latest
+    outputs:
+      image_uri: ${{ steps.push-image.outputs.image_uri }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -55,15 +57,21 @@ jobs:
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: stock_market_prediction/lambda_functions
-        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_TAG: latest
       run: |
         cd "predictions_lambda/"
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        IMAGE_URI = $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker build -t $IMAGE_URI .
+        docker push $IMAGE_URI
+        echo "::add-mask::$IMAGE_URI"
+        echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+        echo "image_uri=$IMAGE_URI" >> $GITHUB_OUTPUT
 
   terraform:
     needs: Docker-Build-Push
     name: "Terraform infrastructure change management"
+    env:
+      TF_VAR_image_uri: ${{ needs.Docker-Build-Push.outputs.image_uri}}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -73,7 +81,7 @@ jobs:
     steps:
       - name: Checkout Repository to Runner
         uses: actions/checkout@v4
-        
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
         with:
