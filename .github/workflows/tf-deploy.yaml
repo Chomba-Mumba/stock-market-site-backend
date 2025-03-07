@@ -12,10 +12,9 @@ on:
       - main
 env:
   TF_LOG: INFO
-  # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  # `AWS_`ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 permissions:
       id-token: write   # This is required for requesting the JWT
       contents: read 
