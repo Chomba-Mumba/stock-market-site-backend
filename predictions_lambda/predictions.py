@@ -224,7 +224,7 @@ def lambda_handler(event,context):
     except Exception as e:
         return {
             'satusCode': 500,
-            'body':'Internal server erorr: ' + e
+            'body':'Internal server erorr: ' + str(e)
         }
 
 if __name__ == "__main__":
