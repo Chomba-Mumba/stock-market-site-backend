@@ -5,6 +5,8 @@ resource "aws_lambda_function" "predictions_lambda" {
   handler       = "predictions_lambda.predictions.lambda_handler"
 
   runtime = "python3.9"
+  memory_size   = 1024  
+  timeout       = 60  
 
   depends_on = [aws_iam_role.stock_market_lambda_role]
 
