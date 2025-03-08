@@ -33,8 +33,8 @@ resource "aws_iam_role_policy_attachment" "attach_lambda_s3_access" {
 
 data "aws_iam_policy_document" "lambda_s3_access" {
   statement {
-    sid       = "ReadWriteOnModelsAndPredictions"
-    actions   = [
+    sid = "ReadWriteOnModelsAndPredictions"
+    actions = [
       "s3:GetObject",
       "s3:PutObject"
     ]
