@@ -5,7 +5,7 @@ import tensorflow as tf
 from random import random
 from unittest.mock import patch, MagicMock
 from sklearn.preprocessing import MinMaxScaler
-from services.model_utils import load_past_data
+from services.model_utils import load_past_data #TODO - adjust references for services in model tests in Pipelines and test files.
 import os
 from ..predictions_performance import predict_multiple_steps, scale_data, unscale_data, predict_next_week, predict_next_day
 
