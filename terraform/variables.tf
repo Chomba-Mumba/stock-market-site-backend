@@ -31,3 +31,8 @@ variable "image_uri" {
   type      = string
   sensitive = true
 }
+
+variable "s3_bucket" {
+  type = string
+  default = "stock-market-site"
+}

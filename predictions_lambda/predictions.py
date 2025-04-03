@@ -13,7 +13,7 @@ from functools import wraps
 
 from utils.load_data import load_past_data
 
-# Set up logging
+#setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -174,10 +174,8 @@ def predict_next_week_lambda(event,context):
 def predict_next_day_lambda(event,context):
     s3 = boto3.client('s3')
 
-    # Load model form S3 bucket
     bucket_name = event.get('bucket_name')
 
-    # Running on AWS Lambda
     local_path = event.get('local_path')
     pred_path = event.get('pred_path')
 
@@ -190,7 +188,7 @@ def predict_next_day_lambda(event,context):
             'body': 'Missing one of the required parameters: bucket_name, model_key, pred_key'
         }
 
-    # Download model from S3 to temp folder
+    #download model from s3 bucket.
     s3.download_file(bucket_name, model_key, local_path)
     s3.download_file(bucket_name, pred_key, pred_path)
 
@@ -223,8 +221,8 @@ def lambda_handler(event,context):
             }
     except Exception as e:
         return {
-            'satusCode': 500,
-            'body':'Internal server erorr: ' + str(e)
+            'statusCode' : 500,
+            'body' : f'error: {str(e)}'
         }
 
 if __name__ == "__main__":

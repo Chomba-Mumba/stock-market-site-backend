@@ -19,7 +19,41 @@ permissions:
       id-token: write   # This is required for requesting the JWT
       contents: read 
 
-jobs:  
+jobs:
+  zip-lambda-functions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::429116711298:role/stock_market_backend_cicd_role
+        aws-region: eu-west-2
+        mask-aws-account-id: 'false'
+
+    - name: Install Zip
+      run: sudo apt-get install 
+
+    - name: Zip and Upload Lambda Functions
+      run: |
+        ls -lh lambda/
+
+        echo "Zipping and uploading lambda functions..."
+        for dir in lambda/*; do
+          if [ -d "$dir" ] && [ "$(basename "$dir")" != "predictions_lambda" ]; then
+            zip_file="${dir}.zip"
+            base_name="$(basename "$dir")"
+
+            zip -r "$zip_file" "$dir"
+
+            hash=$(sha256sum "$zip_file" | awk '{print $1}')
+
+            aws s3 cp "$zip_file" "s3://stock-market-site/lambda/${base_name}.zip" \
+              --metadata sha256="$hash"
+          fi
+        done
   docker-build-push:   
     runs-on: ubuntu-latest
     outputs:
@@ -34,7 +68,7 @@ jobs:
         python-version: "3.11.9"
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::429116711298:role/stock_market_backend_cicd_role
         aws-region: eu-west-2

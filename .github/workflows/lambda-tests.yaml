@@ -1,12 +1,11 @@
 name: Python Lambda Tests
-#  TODO - Setup wokflow to zip lambda functions
 on:
   push:
     branches:
-      - main  # Run tests on pushes to the main branch
+      - main 
   pull_request:
     branches:
-      - main  # Run tests on pull requests to the main branch
+      - main 
 
 jobs:
   test:
