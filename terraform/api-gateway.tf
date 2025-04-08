@@ -38,20 +38,26 @@ resource "aws_api_gateway_resource" "performance" {
   path_part = "performance"
 }
 
-resource "aws_api_gateway_method" "performance_method" {
-  authorization = "NONE"
-  http_method = "GET"
-  resource_id = aws_api_gateway_resource.performance.id
+resource "aws_api_gateway_resource" "performance_proxy" {
   rest_api_id = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  parent_id   = aws_api_gateway_resource.performance.id 
+  path_part   = "{proxy+}"
 }
 
-resource "aws_api_gateway_integration" "performance_integration" {
-  http_method = aws_api_gateway_method.performance_method.http_method
-  resource_id = aws_api_gateway_resource.performance.id
-  rest_api_id = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+resource "aws_api_gateway_method" "performance_proxy_method" {
+  rest_api_id   = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  resource_id   = aws_api_gateway_resource.performance_proxy.id
+  http_method   = "ANY"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "performance_proxy_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  resource_id             = aws_api_gateway_resource.performance_proxy.id
+  http_method             = aws_api_gateway_method.performance_proxy_method.http_method
   integration_http_method = "POST"
-  type = "AWS_PROXY"
-  uri = aws_lambda_function.performance_lambda.invoke_arn
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.performance_lambda.invoke_arn
 }
 
 # news lambda resource
@@ -62,27 +68,34 @@ resource "aws_api_gateway_resource" "news" {
   path_part = "news"
 }
 
-resource "aws_api_gateway_method" "news_method" {
+resource "aws_api_gateway_resource" "news_proxy" {
+  rest_api_id = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  parent_id   = aws_api_gateway_resource.news.id 
+  path_part   = "{proxy+}"
+}
+
+resource "aws_api_gateway_method" "news_proxy_method" {
+  rest_api_id   = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  resource_id   = aws_api_gateway_resource.news_proxy.id
+  http_method   = "ANY"
   authorization = "NONE"
-  http_method = "GET"
-  resource_id = aws_api_gateway_resource.news.id
-  rest_api_id = aws_api_gateway_rest_api.stock_market_site_rest_api.id
 }
 
-resource "aws_api_gateway_integration" "news_integration" {
-  http_method = aws_api_gateway_method.news_method.http_method
-  resource_id = aws_api_gateway_resource.news.id
-  rest_api_id = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+resource "aws_api_gateway_integration" "news_proxy_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.stock_market_site_rest_api.id
+  resource_id             = aws_api_gateway_resource.news_proxy.id
+  http_method             = aws_api_gateway_method.news_proxy_method.http_method
   integration_http_method = "POST"
-  type = "AWS_PROXY"
-  uri = aws_lambda_function.news_lambda.invoke_arn
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.news_lambda.invoke_arn
 }
 
+#API Gateway deployment
 resource "aws_api_gateway_deployment" "stock_market_site_deploy" {
   depends_on = [
     aws_api_gateway_integration.predictions_integration,
-    aws_api_gateway_integration.performance_integration,
-    aws_api_gateway_integration.news_integration,
+    aws_api_gateway_integration.performance_proxy_integration,
+    aws_api_gateway_integration.news_proxy_integration,
     aws_api_gateway_integration.proxy_integration
   ]
 
@@ -90,8 +103,8 @@ resource "aws_api_gateway_deployment" "stock_market_site_deploy" {
   triggers = {
     redeployment = sha1(jsonencode([
       aws_api_gateway_method.predictions_method.id,
-      aws_api_gateway_method.performance_method.id,
-      aws_api_gateway_method.news_method.id
+      aws_api_gateway_method.performance_proxy_method.id,
+      aws_api_gateway_method.news_proxy_method.id
     ]))
   }
 

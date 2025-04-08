@@ -1,5 +1,6 @@
 from functools import wraps
 from utils.news import get_ftse100_news
+import json
 
 import logging
 
@@ -21,7 +22,7 @@ def route_decorator(method,path):
         
     return decorator
 
-@route_decorator('GET','/get_news_articles')
+@route_decorator('GET','get_news_articles')
 def get_news_articles(event,context):
     news_feed = get_ftse100_news()
     print(news_feed)
@@ -31,12 +32,19 @@ def get_news_articles(event,context):
             'statusCode' : 500,
             'body' : f'Failed to fetch news feed: {news_feed.status_code} - {news_feed.text}'
         }
-    return news_feed['feed']
+    return {
+        'statusCode': 200,
+        'body': json.dumps(news_feed['feed']), 
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        }
+    }
 
 def lambda_handler(event,context):
     try:
         method = event.get('httpMethod')
-        path = event.get('path')
+        path = event.get('pathParameters', {}).get('proxy')
 
         if (method,path) in routes:
             return routes[(method,path)](event,context)
@@ -54,7 +62,7 @@ def lambda_handler(event,context):
 if __name__ == "__main__":
     event = {
         'httpMethod': 'GET',
-        'path': '/get_news_articles'
+        'path': 'get_news_articles'
     }
     context = {}
     print(lambda_handler(event,context))

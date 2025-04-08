@@ -27,12 +27,15 @@ data "aws_s3_object" "performance_lambda_object" {
 resource "aws_lambda_function" "performance_lambda" {
   function_name = "performance_lambda"
 
-  handler = "performance_lambda.lambda_handler"
+  handler = "predictions_performance.lambda_handler"
   runtime = "python3.10"
   role = aws_iam_role.stock_market_lambda_role.arn
 
   memory_size = 128
   timeout = 10
+  layers = [
+    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python310:23"
+  ]
 
   depends_on = [aws_iam_role.stock_market_lambda_role]
 
@@ -56,7 +59,7 @@ resource "aws_lambda_function" "news_lambda" {
   function_name = "news_lambda"
   runtime = "python3.10"
 
-  handler = "news_lambda.lambda_handler"
+  handler = "news.lambda_handler"
 
   role = aws_iam_role.stock_market_lambda_role.arn 
 

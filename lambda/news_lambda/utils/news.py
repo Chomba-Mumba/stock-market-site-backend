@@ -2,7 +2,6 @@ import requests
 import random
 import boto3
 
-API_KEY = 'S2K79BRC7OUKSXRP' #TODO - get API Key from ACM?
 BASE_URL = 'https://www.alphavantage.co/query'
 
 def get_ftse100_news():

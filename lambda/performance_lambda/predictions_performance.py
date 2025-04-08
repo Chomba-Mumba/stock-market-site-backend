@@ -1,5 +1,6 @@
 import logging
 import boto3
+import json
 
 from utils.calc_perf_metrics import calculate_model_accuracy, get_metrics
 
@@ -22,12 +23,12 @@ def route_decorator(method,path):
         return wrapper
     return decorator
 
-@route_decorator('GET','/performance_metrics')
+@route_decorator('GET','performance_metrics')
 def performance_metrics(event,context):
 
-    bucket_name = event.get('bucket_name')
-    local_path = event.get('local_path')
-    file_key = event.get('file_key')
+    bucket_name = event['queryStringParameters'].get('bucket_name', '')
+    local_path = event['queryStringParameters'].get('local_path', '')
+    file_key = event['queryStringParameters'].get('file_key', '')
 
     if not local_path or not bucket_name or not file_key:
         return {
@@ -39,16 +40,15 @@ def performance_metrics(event,context):
 
     return {
         'statusCode' : '200',
-        'body' : performance
+        'body' : json.dumps(performance)
     }
 
-@route_decorator('GET','/monthly_pred')
+@route_decorator('GET','monthly_pred')
 def monthly_pred_metrics(event,context):
-
-    bucket_name = event.get('bucket_name')
-    local_path = event.get('local_path')
-    file_key = event.get('file_key')
-
+    bucket_name = event['queryStringParameters'].get('bucket_name', '')
+    local_path = event['queryStringParameters'].get('local_path', '')
+    file_key = event['queryStringParameters'].get('file_key', '')
+    print("received parameters frome event")
     if not local_path or not bucket_name or not file_key:
         return {
             'statusCode': 400,
@@ -57,18 +57,18 @@ def monthly_pred_metrics(event,context):
     
     #get csv from s3 adn return last 30 days of data
     df = get_metrics(bucket_name, file_key,local_path)
-
+    print(df['predicted'].tail(30).tolist())
     return {
         'statusCode' : 200,
-        'body' : df['predicted'].tail(30).tolist()
+        'body' : json.dumps(df['predicted'].tail(30).tolist())
     }
 
-@route_decorator('GET','/monthly_values')
+@route_decorator('GET','monthly_values')
 def monthly_values(event,context):
 
-    bucket_name = event.get('bucket_name')
-    local_path = event.get('local_path')
-    file_key = event.get('file_key')
+    bucket_name = event['queryStringParameters'].get('bucket_name', '')
+    local_path = event['queryStringParameters'].get('local_path', '')
+    file_key = event['queryStringParameters'].get('file_key', '')
 
     if not bucket_name or not local_path or not file_key:
         return {
@@ -86,7 +86,7 @@ def monthly_values(event,context):
 def lambda_handler(event,context):
     try:
         method = event.get('httpMethod')
-        path = event.get('path')
+        path = event.get('pathParameters', {}).get('proxy')
 
         if (method,path) in routes:
             return routes[(method,path)](event,context)

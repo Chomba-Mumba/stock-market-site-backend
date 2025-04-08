@@ -29,7 +29,7 @@ variable "stage_name" {
 # lambda_predictions image uri
 variable "image_uri" {
   type      = string
-  sensitive = true
+  sensitive = false
 }
 
 variable "s3_bucket" {
