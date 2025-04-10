@@ -2,7 +2,7 @@
 
 This website is part of the Cloud Resume Challenge and provides stock market predictions using a machine learning mode I developed for my final year dissertation. It allows users to interact with a frontend that fetches data from external APIs and displays stock market predictions based on historical data.
 
-Please view the website @ stock.chomba-mumba.co.uk
+Please view the website @ https://stock.chomba-mumba.co.uk
 
 View the frontend repo @ https://github.com/Chomba-Mumba/stock-market-site-frontend
 
