@@ -6,9 +6,9 @@ Please view the website @ https://stock.chomba-mumba.co.uk
 
 View the frontend repo @ https://github.com/Chomba-Mumba/stock-market-site-frontend
 
-![Architecture Diagram](./stock_market_site_system_architecture.drawio.png)
-
 ## Architecture Overview
+
+![Architecture Diagram](./stock_market_site_system_architecture.drawio.png)
 
 The website is built using a serverless architecture on AWS, including the following key components:
 
