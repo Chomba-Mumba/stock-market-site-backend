@@ -1,33 +1,24 @@
-provider "aws" {
-  region = var.aws_region
-
-  default_tags {
-    tags = {
-      hashicorp-learn = "lambda-api-gateway"
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
     }
   }
-
 }
 
-resource "random_pet" "lambda_bucket_name" {
-  prefix = "learn-terraform-functions"
-  length = 4
-}
-
-resource "aws_s3_bucket" "lambda_bucket" {
-  bucket = random_pet.lambda_bucket_name.id
-}
-
-resource "aws_s3_bucket_ownership_controls" "lambda_bucket" {
-  bucket = aws_s3_bucket.lambda_bucket.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
+terraform {
+  backend "s3" {
+    bucket         = "stock-market-site-tfstate-bucket"
+    key            = "terraform.tfstate"
+    profile        = "assumed-role"
+    region         = "eu-west-2"
+    dynamodb_table = "stock_market_prediction_tflock"
+    encrypt        = true
   }
 }
 
-resource "aws_s3_bucket_acl" "lambda_bucket" {
-  depends_on = [aws_s3_bucket_ownership_controls.lambda_bucket]
-
-  bucket = aws_s3_bucket.lambda_bucket.id
-  acl    = "private"
+provider "aws" {
+  profile = "assumed-role"
+  region  = "eu-west-2"
 }

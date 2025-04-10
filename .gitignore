@@ -25,14 +25,20 @@ yarn-error.log*
 training_data.csv
 
 /venv/
-
+venv/
 # Local Terraform directories and files
 .terraform/
 *.tfstate
 *.tfstate.backup
+terraform/.terraform.lock.hcl
 
 # Sensitive variable files
 terraform.tfvars
+
+/test/
+
+*.zip
+\lambda\*.zip
 
 # Optional: Ignore lock file if version consistency isn’t required
 # .terraform.lock.hcl
