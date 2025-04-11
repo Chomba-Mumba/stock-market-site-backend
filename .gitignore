@@ -24,6 +24,9 @@ yarn-error.log*
 
 training_data.csv
 
+temp/*
+tmp/* 
+
 /venv/
 venv/
 # Local Terraform directories and files
